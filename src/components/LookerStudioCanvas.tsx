@@ -36,6 +36,7 @@ interface LookerStudioCanvasProps {
   langMode: BilingualMode;
   onSelectSlide: (num: number) => void;
   onUpdateSlide?: (updated: SlideBlueprint) => void;
+  isMobileView?: boolean;
 }
 
 export const LookerStudioCanvas: React.FC<LookerStudioCanvasProps> = ({
@@ -45,7 +46,8 @@ export const LookerStudioCanvas: React.FC<LookerStudioCanvasProps> = ({
   onNextSlide,
   langMode,
   onSelectSlide,
-  onUpdateSlide
+  onUpdateSlide,
+  isMobileView = false
 }) => {
   const [activeControlValues, setActiveControlValues] = useState<Record<string, string>>({});
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
@@ -185,7 +187,9 @@ export const LookerStudioCanvas: React.FC<LookerStudioCanvasProps> = ({
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35, ease: 'easeOut' }}
-        className="relative p-6 bg-slate-950 flex flex-col gap-6 text-slate-100 min-h-[720px]"
+        className={`relative ${
+          isMobileView ? 'p-3.5 gap-4' : 'p-3.5 sm:p-6 gap-5 sm:gap-6'
+        } bg-slate-950 flex flex-col text-slate-100 min-h-[540px] sm:min-h-[720px]`}
       >
         {/* Page Identity Header Block */}
         <div className="flex flex-col md:flex-row md:items-center justify-between pb-4 border-b border-slate-800/80 gap-3">
@@ -290,7 +294,7 @@ export const LookerStudioCanvas: React.FC<LookerStudioCanvasProps> = ({
         )}
 
         {/* 4. Metric Scorecards (Large Bold KPI Blocks with Animated Sparklines) */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className={`grid grid-cols-1 ${isMobileView ? 'gap-3' : 'sm:grid-cols-3 gap-4'}`}>
           {slide.chartMetricsMath.scorecards.map((kpi, idx) => (
             <motion.div
               key={idx}
@@ -461,7 +465,7 @@ export const LookerStudioCanvas: React.FC<LookerStudioCanvasProps> = ({
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+            <div className={`grid grid-cols-1 ${isMobileView ? 'gap-3' : 'md:grid-cols-3 gap-4'} text-xs`}>
               <div className="bg-slate-950 p-3 rounded-lg border border-slate-800">
                 <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
                   Dimensions (វិមាត្រ)
@@ -508,7 +512,7 @@ export const LookerStudioCanvas: React.FC<LookerStudioCanvasProps> = ({
           </div>
 
           {/* On-Screen Presentation Text Boxes (Looker Studio Text Cards) */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className={`grid grid-cols-1 ${isMobileView ? 'gap-3' : 'md:grid-cols-2 gap-4'}`}>
             {langMode !== 'khmer' && (
               <div className="bg-slate-900/90 rounded-xl border border-slate-800 p-4 shadow-lg">
                 <div className="text-xs font-semibold text-sky-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
