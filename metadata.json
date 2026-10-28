@@ -1,0 +1,6 @@
+{
+  "name": "Looker Studio Blueprint: Basics of Neural Networks",
+  "description": "Professional bilingual (English/Khmer) Looker Studio BI dashboard blueprint and interactive presentation for the Basics of Neural Networks course by Mr. POL Utdom.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
