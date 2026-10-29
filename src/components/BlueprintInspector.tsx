@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Copy, Check, FileCode, Layers, BookOpen, Share2, Download } from 'lucide-react';
 import { SlideBlueprint, BilingualMode } from '../types';
-import { MathView } from '../utils/mathRenderer';
+import { MathView, RichMathText } from '../utils/mathRenderer';
 
 interface BlueprintInspectorProps {
   slide: SlideBlueprint;
@@ -244,10 +244,18 @@ ${s.expandedBilingualContent.onScreenText.kh.map((t) => `    * ${t}`).join('\n')
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-2">
                 {slide.chartMetricsMath.scorecards.map((sc, i) => (
                   <div key={i} className="p-3 rounded-xl bg-slate-950 border border-slate-800">
-                    <div className="text-slate-400 text-[11px] font-medium">{sc.labelEn}</div>
-                    <div className="text-amber-300 text-[11px] font-khmer">{sc.labelKh}</div>
-                    <div className="text-lg font-extrabold text-white font-mono mt-1">{sc.value}</div>
-                    <div className="text-[10px] text-slate-500 mt-1">{sc.tooltipEn}</div>
+                    <div className="text-slate-400 text-[11px] font-medium">
+                      <RichMathText text={sc.labelEn} />
+                    </div>
+                    <div className="text-amber-300 text-[11px] font-khmer">
+                      <RichMathText text={sc.labelKh} />
+                    </div>
+                    <div className="text-base font-extrabold text-white font-mono mt-1 overflow-x-auto">
+                      <RichMathText text={sc.value} />
+                    </div>
+                    <div className="text-[10px] text-slate-500 mt-1">
+                      <RichMathText text={sc.tooltipEn} />
+                    </div>
                   </div>
                 ))}
               </div>
@@ -345,9 +353,11 @@ ${s.expandedBilingualContent.onScreenText.kh.map((t) => `    * ${t}`).join('\n')
                 <span className="text-slate-400 font-semibold uppercase text-[10px] tracking-wider">
                   On-Screen Text (English):
                 </span>
-                <ul className="mt-2 space-y-1.5 list-disc list-inside text-slate-300">
+                <ul className="mt-2 space-y-2 list-disc pl-4 text-slate-300">
                   {slide.expandedBilingualContent.onScreenText.en.map((t, i) => (
-                    <li key={i}>{t}</li>
+                    <li key={i} className="pl-1">
+                      <RichMathText text={t} />
+                    </li>
                   ))}
                 </ul>
               </div>
@@ -356,9 +366,11 @@ ${s.expandedBilingualContent.onScreenText.kh.map((t) => `    * ${t}`).join('\n')
                 <span className="text-amber-400 font-semibold uppercase text-[10px] tracking-wider font-khmer">
                   អត្ថបទបង្ហាញលើអេក្រង់ (ភាសាខ្មែរ)៖
                 </span>
-                <ul className="mt-2 space-y-1.5 list-disc list-inside text-amber-100 font-khmer">
+                <ul className="mt-2 space-y-2 list-disc pl-4 text-amber-100 font-khmer">
                   {slide.expandedBilingualContent.onScreenText.kh.map((t, i) => (
-                    <li key={i}>{t}</li>
+                    <li key={i} className="pl-1">
+                      <RichMathText text={t} />
+                    </li>
                   ))}
                 </ul>
               </div>
@@ -369,12 +381,12 @@ ${s.expandedBilingualContent.onScreenText.kh.map((t) => `    * ${t}`).join('\n')
               <span className="text-slate-400 font-semibold uppercase text-[10px] tracking-wider">
                 Deep-Dive Lesson Explanation (ការពន្យល់ពង្រីកសេចក្តីលម្អិត):
               </span>
-              <p className="text-slate-200 leading-relaxed">
-                {slide.expandedBilingualContent.deepDiveExplanation.en}
-              </p>
-              <p className="text-amber-200 font-khmer leading-relaxed border-t border-slate-800/80 pt-2">
-                {slide.expandedBilingualContent.deepDiveExplanation.kh}
-              </p>
+              <div className="text-slate-200 leading-relaxed">
+                <RichMathText text={slide.expandedBilingualContent.deepDiveExplanation.en} />
+              </div>
+              <div className="text-amber-200 font-khmer leading-relaxed border-t border-slate-800/80 pt-2">
+                <RichMathText text={slide.expandedBilingualContent.deepDiveExplanation.kh} />
+              </div>
             </div>
 
             {/* Practical Application */}
@@ -385,14 +397,14 @@ ${s.expandedBilingualContent.onScreenText.kh.map((t) => `    * ${t}`).join('\n')
               <div className="font-bold text-white text-xs">
                 {slide.expandedBilingualContent.practicalApplication.titleEn} / {slide.expandedBilingualContent.practicalApplication.titleKh}
               </div>
-              <p className="text-slate-300 leading-relaxed">
-                {slide.expandedBilingualContent.practicalApplication.scenarioEn}
-              </p>
-              <p className="text-amber-200 font-khmer leading-relaxed">
-                {slide.expandedBilingualContent.practicalApplication.scenarioKh}
-              </p>
+              <div className="text-slate-300 leading-relaxed">
+                <RichMathText text={slide.expandedBilingualContent.practicalApplication.scenarioEn} />
+              </div>
+              <div className="text-amber-200 font-khmer leading-relaxed">
+                <RichMathText text={slide.expandedBilingualContent.practicalApplication.scenarioKh} />
+              </div>
               <div className="text-[11px] text-emerald-300 border-t border-slate-800/80 pt-1.5 font-medium">
-                Impact: {slide.expandedBilingualContent.practicalApplication.businessImpactEn}
+                Impact: <RichMathText text={slide.expandedBilingualContent.practicalApplication.businessImpactEn} />
               </div>
             </div>
           </div>

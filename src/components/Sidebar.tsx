@@ -64,7 +64,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       )}
 
       <aside
-        className={`bg-slate-900 border-r border-slate-800 flex flex-col shrink-0 transition-all duration-300 ${
+        className={`bg-slate-900 border-r border-slate-800 flex flex-col shrink-0 h-full max-h-full overflow-hidden transition-all duration-300 ${
           isMobileView
             ? `absolute inset-y-0 left-0 z-50 shadow-2xl ${
                 isOpen ? 'w-[86%] max-w-[320px] translate-x-0' : 'w-0 -translate-x-full overflow-hidden border-none'
@@ -75,7 +75,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         }`}
       >
         {/* Sidebar Header & Search */}
-        <div className="p-4 border-b border-slate-800 flex flex-col gap-3">
+        <div className="p-4 border-b border-slate-800 flex flex-col gap-3 shrink-0">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-300">
               <Layers className="w-4 h-4 text-sky-400" />
@@ -135,7 +135,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* Slide List */}
-        <div className="flex-1 overflow-y-auto p-2 space-y-1.5">
+        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-2 space-y-1.5">
           {filteredSlides.map((s) => {
             const isSelected = s.slideNumber === currentSlideNum;
             return (
@@ -199,7 +199,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* Footer Info */}
-        <div className="p-3 border-t border-slate-800 bg-slate-950/60 text-[11px] text-slate-400 flex items-center justify-between">
+        <div className="p-3 border-t border-slate-800 bg-slate-950/60 text-[11px] text-slate-400 flex items-center justify-between shrink-0">
           <span>Course: Dr. Valy Dona</span>
           <span className="font-mono text-sky-400">100% Bilingual</span>
         </div>

@@ -17,7 +17,7 @@ import {
   ExternalLink
 } from 'lucide-react';
 import { SlideBlueprint, BilingualMode } from '../types';
-import { MathView } from '../utils/mathRenderer';
+import { MathView, RichMathText } from '../utils/mathRenderer';
 import { ActivationSimulator } from './simulators/ActivationSimulator';
 import { NeuronSimulator } from './simulators/NeuronSimulator';
 import { PixelGridSimulator } from './simulators/PixelGridSimulator';
@@ -109,7 +109,7 @@ export const LookerStudioCanvas: React.FC<LookerStudioCanvasProps> = ({
   };
 
   return (
-    <div className="flex flex-col w-full bg-slate-950 rounded-2xl border border-slate-800 shadow-2xl overflow-hidden">
+    <div className="flex flex-col shrink-0 w-full bg-slate-950 rounded-2xl border border-slate-800 shadow-2xl overflow-hidden">
       {/* 1. Google Looker Studio Top Chrome Bar */}
       <div className="bg-slate-900 border-b border-slate-800 px-4 py-2.5 flex flex-wrap items-center justify-between gap-3 text-xs">
         {/* Left: Looker Studio branding & Document Title */}
@@ -192,18 +192,38 @@ export const LookerStudioCanvas: React.FC<LookerStudioCanvasProps> = ({
         } bg-slate-950 flex flex-col text-slate-100 min-h-[540px] sm:min-h-[720px]`}
       >
         {/* Page Identity Header Block */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between pb-4 border-b border-slate-800/80 gap-3">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <span className="px-2.5 py-0.5 rounded text-[11px] font-mono font-bold bg-sky-500/20 text-sky-300 border border-sky-500/30">
+        <div className="flex flex-col pb-4 border-b border-slate-800/80 gap-2.5">
+          {/* Top Row: Slide Badges & Canvas Theme Metadata */}
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="px-2.5 py-0.5 rounded text-[11px] font-mono font-bold bg-sky-500/20 text-sky-300 border border-sky-500/30 whitespace-nowrap">
                 LOOKER STUDIO PAGE {slide.slideNumber} • SLIDE {slide.slideNumber}
               </span>
-              <span className="px-2.5 py-0.5 rounded text-[11px] font-medium bg-slate-800 text-slate-300">
+              <span className="px-2.5 py-0.5 rounded text-[11px] font-medium bg-slate-800 text-slate-300 border border-slate-700/60 whitespace-nowrap">
                 {slide.category}
               </span>
             </div>
 
-            {/* Bilingual Title */}
+            {/* Theme & Canvas Badge */}
+            <div className="flex items-center gap-2.5">
+              <div className="text-right hidden sm:block">
+                <div className="text-[11px] font-medium text-slate-400 font-mono leading-tight">
+                  Canvas Theme: {slide.pageIdentity.canvasSetup.split('(')[0].trim()}
+                </div>
+                <div className="text-[10px] text-slate-500 font-khmer leading-tight mt-0.5">
+                  {slide.pageIdentity.canvasSetupKh}
+                </div>
+              </div>
+              <div className="flex items-center gap-1 p-1 bg-slate-900 rounded-lg border border-slate-800 shrink-0">
+                <span className="w-3.5 h-3.5 rounded-full" style={{ backgroundColor: slide.pageIdentity.hexPrimary }} title={`Primary: ${slide.pageIdentity.hexPrimary}`} />
+                <span className="w-3.5 h-3.5 rounded-full" style={{ backgroundColor: slide.pageIdentity.hexSecondary }} title={`Secondary: ${slide.pageIdentity.hexSecondary}`} />
+                <span className="w-3.5 h-3.5 rounded-full" style={{ backgroundColor: slide.pageIdentity.hexAccent }} title={`Accent: ${slide.pageIdentity.hexAccent}`} />
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom Row: Full-Width Bilingual Title */}
+          <div className="w-full">
             {langMode !== 'khmer' && (
               <h1
                 contentEditable={isEditMode}
@@ -214,7 +234,7 @@ export const LookerStudioCanvas: React.FC<LookerStudioCanvasProps> = ({
                     onUpdateSlide({ ...slide, englishTitle: text });
                   }
                 }}
-                className={`text-xl md:text-2xl font-extrabold text-white tracking-tight ${
+                className={`text-xl md:text-2xl font-extrabold text-white tracking-tight leading-snug ${
                   isEditMode ? 'outline-1 outline-dashed outline-amber-400/60 rounded px-1.5 py-0.5 bg-amber-500/5' : ''
                 }`}
               >
@@ -231,30 +251,13 @@ export const LookerStudioCanvas: React.FC<LookerStudioCanvasProps> = ({
                     onUpdateSlide({ ...slide, khmerTitle: text });
                   }
                 }}
-                className={`text-lg md:text-xl font-bold text-amber-300 font-khmer mt-0.5 ${
+                className={`text-lg md:text-xl font-bold text-amber-300 font-khmer mt-1 leading-relaxed ${
                   isEditMode ? 'outline-1 outline-dashed outline-amber-400/60 rounded px-1.5 py-0.5 bg-amber-500/5' : ''
                 }`}
               >
                 {slide.khmerTitle}
               </h2>
             )}
-          </div>
-
-          {/* Theme & Canvas Badge */}
-          <div className="flex items-center gap-2 shrink-0">
-            <div className="text-right hidden sm:block">
-              <div className="text-[11px] font-medium text-slate-400 font-mono">
-                Canvas Theme: {slide.pageIdentity.canvasSetup.split('(')[0]}
-              </div>
-              <div className="text-[10px] text-slate-500 font-khmer">
-                {slide.pageIdentity.canvasSetupKh}
-              </div>
-            </div>
-            <div className="flex items-center gap-1 p-1 bg-slate-900 rounded-lg border border-slate-800">
-              <span className="w-3.5 h-3.5 rounded-full" style={{ backgroundColor: slide.pageIdentity.hexPrimary }} title={`Primary: ${slide.pageIdentity.hexPrimary}`} />
-              <span className="w-3.5 h-3.5 rounded-full" style={{ backgroundColor: slide.pageIdentity.hexSecondary }} title={`Secondary: ${slide.pageIdentity.hexSecondary}`} />
-              <span className="w-3.5 h-3.5 rounded-full" style={{ backgroundColor: slide.pageIdentity.hexAccent }} title={`Accent: ${slide.pageIdentity.hexAccent}`} />
-            </div>
           </div>
         </div>
 
@@ -307,11 +310,15 @@ export const LookerStudioCanvas: React.FC<LookerStudioCanvasProps> = ({
               <div>
                 <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
                   <span contentEditable={isEditMode} suppressContentEditableWarning>
-                    {langMode === 'khmer'
-                      ? kpi.labelKh
-                      : langMode === 'english'
-                      ? kpi.labelEn
-                      : `${kpi.labelEn} / ${kpi.labelKh}`}
+                    <RichMathText
+                      text={
+                        langMode === 'khmer'
+                          ? kpi.labelKh
+                          : langMode === 'english'
+                          ? kpi.labelEn
+                          : `${kpi.labelEn} / ${kpi.labelKh}`
+                      }
+                    />
                   </span>
                   <HelpCircle className="w-3.5 h-3.5 text-slate-600 group-hover:text-sky-400 transition-colors" />
                 </div>
@@ -333,9 +340,9 @@ export const LookerStudioCanvas: React.FC<LookerStudioCanvasProps> = ({
                       });
                     }
                   }}
-                  className="text-2xl md:text-3xl font-extrabold text-white tracking-tight mt-1 font-mono"
+                  className="text-xl md:text-2xl font-extrabold text-white tracking-tight mt-1 font-mono overflow-x-auto"
                 >
-                  {kpi.value}
+                  {isEditMode ? kpi.value : <RichMathText text={kpi.value} />}
                 </div>
               </div>
 
@@ -358,9 +365,9 @@ export const LookerStudioCanvas: React.FC<LookerStudioCanvasProps> = ({
               </svg>
 
               {/* Tooltip & Guidance */}
-              <div className="mt-2 pt-2 border-t border-slate-800/60 text-[11px] text-slate-400 flex items-center justify-between">
+              <div className="mt-2 pt-2 border-t border-slate-800/60 text-[11px] text-slate-400 flex items-center justify-between gap-2">
                 <span>
-                  {langMode === 'khmer' ? kpi.tooltipKh : kpi.tooltipEn}
+                  <RichMathText text={langMode === 'khmer' ? kpi.tooltipKh : kpi.tooltipEn} />
                 </span>
                 <TrendingUp className="w-3.5 h-3.5 text-emerald-400 shrink-0 ml-1" />
               </div>
@@ -415,6 +422,20 @@ export const LookerStudioCanvas: React.FC<LookerStudioCanvasProps> = ({
                 )}
               </div>
 
+              {/* Formula Explanation Summary */}
+              <div className="mt-3 p-3 rounded-lg bg-slate-950/60 border border-slate-800/70 text-xs leading-relaxed space-y-1.5">
+                {langMode !== 'khmer' && (
+                  <div className="text-slate-300">
+                    <RichMathText text={slide.chartMetricsMath.mathematicalFormulas[0].explanationEn} />
+                  </div>
+                )}
+                {langMode !== 'english' && (
+                  <div className="text-amber-200/90 font-khmer">
+                    <RichMathText text={slide.chartMetricsMath.mathematicalFormulas[0].explanationKh} />
+                  </div>
+                )}
+              </div>
+
               {/* Variable Dictionary Table */}
               {showFormulaDetails && (
                 <div className="mt-4 overflow-x-auto">
@@ -433,8 +454,12 @@ export const LookerStudioCanvas: React.FC<LookerStudioCanvasProps> = ({
                           <td className="py-2 px-3 text-sky-300 font-bold">
                             <MathView math={v.symbol} />
                           </td>
-                          <td className="py-2 px-3 font-sans text-slate-200">{v.meaningEn}</td>
-                          <td className="py-2 px-3 font-khmer text-amber-200">{v.meaningKh}</td>
+                          <td className="py-2 px-3 font-sans text-slate-200">
+                            <RichMathText text={v.meaningEn} />
+                          </td>
+                          <td className="py-2 px-3 font-khmer text-amber-200">
+                            <RichMathText text={v.meaningKh} />
+                          </td>
                           <td className="py-2 px-3 text-[11px] text-slate-400">
                             <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-300">
                               {v.role}
@@ -515,18 +540,18 @@ export const LookerStudioCanvas: React.FC<LookerStudioCanvasProps> = ({
           <div className={`grid grid-cols-1 ${isMobileView ? 'gap-3' : 'md:grid-cols-2 gap-4'}`}>
             {langMode !== 'khmer' && (
               <div className="bg-slate-900/90 rounded-xl border border-slate-800 p-4 shadow-lg">
-                <div className="text-xs font-semibold text-sky-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                <div className="text-xs font-semibold text-sky-400 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
                   <FileText className="w-3.5 h-3.5" />
                   <span>On-Screen Slide Text (English)</span>
                 </div>
                 <ul
                   contentEditable={isEditMode}
                   suppressContentEditableWarning
-                  className="space-y-2 text-xs text-slate-200 leading-relaxed list-disc list-inside"
+                  className="space-y-2.5 text-xs md:text-[13px] text-slate-200 leading-relaxed list-disc pl-4"
                 >
                   {slide.expandedBilingualContent.onScreenText.en.map((t, idx) => (
-                    <li key={idx} className="text-slate-300">
-                      {t}
+                    <li key={idx} className="text-slate-200 pl-1">
+                      {isEditMode ? t : <RichMathText text={t} />}
                     </li>
                   ))}
                 </ul>
@@ -535,18 +560,18 @@ export const LookerStudioCanvas: React.FC<LookerStudioCanvasProps> = ({
 
             {langMode !== 'english' && (
               <div className="bg-slate-900/90 rounded-xl border border-slate-800 p-4 shadow-lg">
-                <div className="text-xs font-semibold text-amber-400 uppercase tracking-wider mb-2 flex items-center gap-1.5 font-khmer">
+                <div className="text-xs font-semibold text-amber-400 uppercase tracking-wider mb-2.5 flex items-center gap-1.5 font-khmer">
                   <FileText className="w-3.5 h-3.5" />
                   <span>អត្ថបទបង្ហាញលើស្លាយ (ភាសាខ្មែរ)</span>
                 </div>
                 <ul
                   contentEditable={isEditMode}
                   suppressContentEditableWarning
-                  className="space-y-2 text-xs text-amber-100/90 leading-relaxed list-disc list-inside font-khmer"
+                  className="space-y-2.5 text-xs md:text-[13px] text-amber-100/95 leading-relaxed list-disc pl-4 font-khmer"
                 >
                   {slide.expandedBilingualContent.onScreenText.kh.map((t, idx) => (
-                    <li key={idx}>
-                      {t}
+                    <li key={idx} className="pl-1">
+                      {isEditMode ? t : <RichMathText text={t} />}
                     </li>
                   ))}
                 </ul>
@@ -562,9 +587,9 @@ export const LookerStudioCanvas: React.FC<LookerStudioCanvasProps> = ({
                   Pedagogical Deep-Dive (ការពន្យល់ពង្រីកសេចក្តីលម្អិត)
                 </span>
               </div>
-              <div className="space-y-2 text-xs md:text-sm leading-relaxed text-slate-300">
+              <div className="space-y-2.5 text-xs md:text-sm leading-relaxed text-slate-300">
                 {langMode !== 'khmer' && (
-                  <p
+                  <div
                     contentEditable={isEditMode}
                     suppressContentEditableWarning
                     onBlur={(e) => {
@@ -584,11 +609,15 @@ export const LookerStudioCanvas: React.FC<LookerStudioCanvasProps> = ({
                     }}
                     className="text-slate-200"
                   >
-                    {slide.expandedBilingualContent.deepDiveExplanation.en}
-                  </p>
+                    {isEditMode ? (
+                      slide.expandedBilingualContent.deepDiveExplanation.en
+                    ) : (
+                      <RichMathText text={slide.expandedBilingualContent.deepDiveExplanation.en} />
+                    )}
+                  </div>
                 )}
                 {langMode !== 'english' && (
-                  <p
+                  <div
                     contentEditable={isEditMode}
                     suppressContentEditableWarning
                     onBlur={(e) => {
@@ -608,8 +637,12 @@ export const LookerStudioCanvas: React.FC<LookerStudioCanvasProps> = ({
                     }}
                     className="text-amber-200/90 font-khmer mt-2"
                   >
-                    {slide.expandedBilingualContent.deepDiveExplanation.kh}
-                  </p>
+                    {isEditMode ? (
+                      slide.expandedBilingualContent.deepDiveExplanation.kh
+                    ) : (
+                      <RichMathText text={slide.expandedBilingualContent.deepDiveExplanation.kh} />
+                    )}
+                  </div>
                 )}
               </div>
             </div>
@@ -626,21 +659,26 @@ export const LookerStudioCanvas: React.FC<LookerStudioCanvasProps> = ({
                 </span>
               </div>
 
-              <div className="text-xs text-slate-300 space-y-1">
+              <div className="text-xs text-slate-300 space-y-1.5">
                 {langMode !== 'khmer' && (
-                  <p>{slide.expandedBilingualContent.practicalApplication.scenarioEn}</p>
+                  <div>
+                    <RichMathText text={slide.expandedBilingualContent.practicalApplication.scenarioEn} />
+                  </div>
                 )}
                 {langMode !== 'english' && (
-                  <p className="font-khmer text-amber-200/90">{slide.expandedBilingualContent.practicalApplication.scenarioKh}</p>
+                  <div className="font-khmer text-amber-200/90">
+                    <RichMathText text={slide.expandedBilingualContent.practicalApplication.scenarioKh} />
+                  </div>
                 )}
               </div>
 
-              <div className="mt-2 pt-2 border-t border-slate-800/80 text-[11px] text-emerald-300 flex items-center justify-between">
+              <div className="mt-2 pt-2 border-t border-slate-800/80 text-[11px] text-emerald-300 flex items-center justify-between gap-2">
                 <span>
-                  Business / Engineering Impact: {slide.expandedBilingualContent.practicalApplication.businessImpactEn}
+                  Business / Engineering Impact:{' '}
+                  <RichMathText text={slide.expandedBilingualContent.practicalApplication.businessImpactEn} />
                 </span>
                 <span className="font-khmer text-[11px] text-slate-400 hidden lg:inline">
-                  {slide.expandedBilingualContent.practicalApplication.businessImpactKh}
+                  <RichMathText text={slide.expandedBilingualContent.practicalApplication.businessImpactKh} />
                 </span>
               </div>
             </div>

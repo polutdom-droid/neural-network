@@ -55,7 +55,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-slate-900/95 backdrop-blur-md border-b border-slate-800 px-3 sm:px-4 py-2.5 flex flex-wrap items-center justify-between gap-2.5 shadow-md">
+    <header className="sticky top-0 z-40 w-full shrink-0 bg-slate-900/95 backdrop-blur-md border-b border-slate-800 px-3 sm:px-4 py-2.5 flex flex-wrap items-center justify-between gap-2.5 shadow-md">
       {/* Brand Identity + Mobile Drawer Button */}
       <div className="flex items-center gap-2.5">
         {onToggleSidebar && (

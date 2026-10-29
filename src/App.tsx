@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Menu,
   ChevronLeft,
@@ -45,9 +45,17 @@ export default function App() {
   const [exportModalOpen, setExportModalOpen] = useState<boolean>(false);
   const [pdfPageDataUrl, setPdfPageDataUrl] = useState<string>('');
   const [isLoadingPdfPage, setIsLoadingPdfPage] = useState<boolean>(false);
+  const mainScrollRef = useRef<HTMLElement | null>(null);
 
   const currentSlide = slides.find((s) => s.slideNumber === currentSlideNum) || slides[0];
   const isMobileView = deviceMode === 'mobile';
+
+  // Reset right lesson pane scroll position to top when switching slides
+  useEffect(() => {
+    if (mainScrollRef.current) {
+      mainScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [currentSlideNum]);
 
   const handleToggleDeviceMode = () => {
     setDeviceMode((prev) => {
@@ -284,7 +292,7 @@ export default function App() {
   );
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-amber-500/30 selection:text-amber-200">
+    <div className="h-screen overflow-hidden bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-amber-500/30 selection:text-amber-200">
       {/* Top Application Bar */}
       <Navbar
         currentSlideNum={currentSlideNum}
@@ -369,7 +377,7 @@ export default function App() {
             </div>
 
             {/* Slide-Over Mobile Drawer & Scrollable Content Area */}
-            <div className="flex-1 flex overflow-hidden relative">
+            <div className="flex-1 min-h-0 flex overflow-hidden relative">
               <Sidebar
                 slides={slides}
                 currentSlideNum={currentSlideNum}
@@ -380,8 +388,13 @@ export default function App() {
                 isMobileView={true}
               />
 
-              <main className="flex-1 overflow-y-auto p-2.5 space-y-3">
-                {renderMainContent()}
+              <main
+                ref={mainScrollRef}
+                className="flex-1 h-full min-h-0 overflow-y-auto overscroll-y-contain scroll-smooth p-2.5"
+              >
+                <div className="flex flex-col gap-3 pb-6">
+                  {renderMainContent()}
+                </div>
               </main>
             </div>
 
@@ -391,7 +404,7 @@ export default function App() {
         </div>
       ) : (
         /* Standard Responsive Desktop / Tablet / Phone Workspace */
-        <div className="flex-1 flex overflow-hidden relative">
+        <div className="flex-1 min-h-0 flex overflow-hidden relative">
           {/* Collapsible 26-Slide Navigation Sidebar */}
           <Sidebar
             slides={slides}
@@ -403,70 +416,75 @@ export default function App() {
             isMobileView={false}
           />
 
-          {/* Content View Container */}
-          <main className="flex-1 overflow-y-auto p-2.5 sm:p-5 flex flex-col gap-4 pb-20 md:pb-6">
-            {/* Top Quick Breadcrumb & Pagination Bar */}
-            <div className="flex flex-wrap items-center justify-between gap-2.5 bg-slate-900/80 px-3 sm:px-4 py-2.5 rounded-xl border border-slate-800 text-xs shadow">
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setSidebarOpen(!sidebarOpen)}
-                  className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors"
-                  title={sidebarOpen ? 'Collapse Slide Navigator' : 'Open Slide Navigator'}
-                >
-                  <Menu className="w-4 h-4" />
-                </button>
-                <div className="flex items-center gap-1.5 text-slate-400">
-                  <span className="hidden sm:inline">Lecture 02</span>
-                  <span className="hidden sm:inline">/</span>
-                  <span className="font-semibold text-slate-200">Slide {currentSlideNum} of 26</span>
-                  <span>/</span>
-                  <span className="text-sky-400 font-mono truncate max-w-[140px] sm:max-w-none">
-                    {currentSlide.category}
-                  </span>
+          {/* Content View Container (Independent Right-Side Scroll Area) */}
+          <main
+            ref={mainScrollRef}
+            className="flex-1 h-full min-h-0 overflow-y-auto overscroll-y-contain scroll-smooth p-2.5 sm:p-5"
+          >
+            <div className="flex flex-col gap-4 pb-20 md:pb-10">
+              {/* Top Quick Breadcrumb & Pagination Bar */}
+              <div className="shrink-0 flex flex-wrap items-center justify-between gap-2.5 bg-slate-900/80 px-3 sm:px-4 py-2.5 rounded-xl border border-slate-800 text-xs shadow">
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setSidebarOpen(!sidebarOpen)}
+                    className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors"
+                    title={sidebarOpen ? 'Collapse Slide Navigator' : 'Open Slide Navigator'}
+                  >
+                    <Menu className="w-4 h-4" />
+                  </button>
+                  <div className="flex items-center gap-1.5 text-slate-400">
+                    <span className="hidden sm:inline">Lecture 02</span>
+                    <span className="hidden sm:inline">/</span>
+                    <span className="font-semibold text-slate-200">Slide {currentSlideNum} of 26</span>
+                    <span>/</span>
+                    <span className="text-sky-400 font-mono truncate max-w-[140px] sm:max-w-none">
+                      {currentSlide.category}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Quick Slide Navigation Carousel */}
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={handlePrev}
+                    disabled={currentSlideNum <= 1}
+                    className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium disabled:opacity-30 disabled:hover:bg-slate-800 flex items-center gap-1"
+                  >
+                    <ChevronLeft className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Prev Slide</span>
+                  </button>
+
+                  {/* Mini Slide Dots Picker (scrollable) */}
+                  <div className="hidden lg:flex items-center gap-1 max-w-xs overflow-x-auto py-1 px-1">
+                    {slides.map((s) => (
+                      <button
+                        key={s.id}
+                        onClick={() => setCurrentSlideNum(s.slideNumber)}
+                        className={`w-6 h-6 rounded text-[11px] font-mono font-bold transition-all shrink-0 flex items-center justify-center ${
+                          s.slideNumber === currentSlideNum
+                            ? 'bg-sky-500 text-slate-950 scale-110 shadow'
+                            : 'bg-slate-800/80 text-slate-400 hover:bg-slate-700 hover:text-slate-200'
+                        }`}
+                        title={`Slide ${s.slideNumber}: ${s.englishTitle}`}
+                      >
+                        {s.slideNumber}
+                      </button>
+                    ))}
+                  </div>
+
+                  <button
+                    onClick={handleNext}
+                    disabled={currentSlideNum >= slides.length}
+                    className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium disabled:opacity-30 disabled:hover:bg-slate-800 flex items-center gap-1"
+                  >
+                    <span className="hidden sm:inline">Next Slide</span>
+                    <ChevronRight className="w-3.5 h-3.5" />
+                  </button>
                 </div>
               </div>
 
-              {/* Quick Slide Navigation Carousel */}
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={handlePrev}
-                  disabled={currentSlideNum <= 1}
-                  className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium disabled:opacity-30 disabled:hover:bg-slate-800 flex items-center gap-1"
-                >
-                  <ChevronLeft className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">Prev Slide</span>
-                </button>
-
-                {/* Mini Slide Dots Picker (scrollable) */}
-                <div className="hidden lg:flex items-center gap-1 max-w-xs overflow-x-auto py-1 px-1">
-                  {slides.map((s) => (
-                    <button
-                      key={s.id}
-                      onClick={() => setCurrentSlideNum(s.slideNumber)}
-                      className={`w-6 h-6 rounded text-[11px] font-mono font-bold transition-all shrink-0 flex items-center justify-center ${
-                        s.slideNumber === currentSlideNum
-                          ? 'bg-sky-500 text-slate-950 scale-110 shadow'
-                          : 'bg-slate-800/80 text-slate-400 hover:bg-slate-700 hover:text-slate-200'
-                      }`}
-                      title={`Slide ${s.slideNumber}: ${s.englishTitle}`}
-                    >
-                      {s.slideNumber}
-                    </button>
-                  ))}
-                </div>
-
-                <button
-                  onClick={handleNext}
-                  disabled={currentSlideNum >= slides.length}
-                  className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium disabled:opacity-30 disabled:hover:bg-slate-800 flex items-center gap-1"
-                >
-                  <span className="hidden sm:inline">Next Slide</span>
-                  <ChevronRight className="w-3.5 h-3.5" />
-                </button>
-              </div>
+              {renderMainContent()}
             </div>
-
-            {renderMainContent()}
           </main>
         </div>
       )}
