@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   BarChart3,
   Globe,
@@ -7,17 +7,11 @@ import {
   LayoutTemplate,
   Code2,
   Columns,
-  FolderGit2,
-  Loader2,
   Smartphone,
   Monitor,
   Menu
 } from 'lucide-react';
 import { BilingualMode } from '../types';
-import {
-  downloadGitHubVercelSourceZip,
-  downloadMissingSlideExporterFile
-} from '../utils/slideExporter';
 
 interface NavbarProps {
   currentSlideNum: number;
@@ -43,17 +37,6 @@ export const Navbar: React.FC<NavbarProps> = ({
   onToggleDeviceMode,
   onToggleSidebar
 }) => {
-  const [isDownloadingSource, setIsDownloadingSource] = useState(false);
-
-  const handleDownloadSourceZip = async () => {
-    try {
-      setIsDownloadingSource(true);
-      await downloadGitHubVercelSourceZip();
-    } finally {
-      setIsDownloadingSource(false);
-    }
-  };
-
   return (
     <header className="sticky top-0 z-40 w-full shrink-0 bg-slate-900/95 backdrop-blur-md border-b border-slate-800 px-3 sm:px-4 py-2.5 flex flex-wrap items-center justify-between gap-2.5 shadow-md">
       {/* Brand Identity + Mobile Drawer Button */}
@@ -206,32 +189,6 @@ export const Navbar: React.FC<NavbarProps> = ({
             ខ្មែរ
           </button>
         </div>
-
-        {/* Direct 1-Click Download of missing slideExporter.ts for GitHub src/utils/ */}
-        <button
-          onClick={downloadMissingSlideExporterFile}
-          className="hidden lg:flex px-2.5 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-white text-xs font-semibold items-center gap-1.5 shadow transition-colors font-khmer"
-          title="Download slideExporter.ts to upload into src/utils/ on GitHub"
-        >
-          <Download className="w-3.5 h-3.5" />
-          <span>ទាញយក slideExporter.ts</span>
-        </button>
-
-        {/* Direct 1-Click Download Source Code (.zip) for GitHub & Vercel */}
-        <button
-          onClick={handleDownloadSourceZip}
-          disabled={isDownloadingSource}
-          className="px-2.5 sm:px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow transition-colors disabled:opacity-50 font-khmer"
-          title="Download Full Source Code (.zip) for GitHub & Vercel"
-        >
-          {isDownloadingSource ? (
-            <Loader2 className="w-3.5 h-3.5 animate-spin" />
-          ) : (
-            <FolderGit2 className="w-3.5 h-3.5" />
-          )}
-          <span className="hidden sm:inline">ដោនឡូតកូដ GitHub (.zip)</span>
-          <span className="sm:hidden">ZIP</span>
-        </button>
 
         {/* Export Modal Button */}
         <button

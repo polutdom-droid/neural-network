@@ -6,7 +6,7 @@ import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 // @ts-ignore - Vite URL import for the original 26-page lecture PDF
 import originalPdfAssetUrl from '../assets/02_Basics_of_Neural_Networks_Original.pdf?url';
 import { SlideBlueprint } from '../types';
-const PROJECT_RAW_FILES = import.meta.glob(['/package.json', '/vercel.json', '/index.html', '/vite.config.ts', '/tsconfig.json', '/metadata.json', '/src/**/*.ts', '/src/**/*.tsx', '/src/**/*.css'], { query: '?raw', import: 'default', eager: true }) as Record<string, string>;
+import { PROJECT_RAW_FILES } from './projectSourceFiles';
 
 // Configure PDF.js worker
 if (typeof window !== 'undefined' && pdfjsLib.GlobalWorkerOptions) {

@@ -13,8 +13,7 @@ import {
   Loader2,
   Layers,
   Type,
-  Sparkles,
-  FolderGit2
+  Sparkles
 } from 'lucide-react';
 import { SlideBlueprint, BilingualMode } from '../types';
 import {
@@ -22,7 +21,6 @@ import {
   generateInteractiveHtmlSlides,
   downloadOriginalFontsZip,
   downloadOriginalPdfFile,
-  downloadGitHubVercelSourceZip,
   triggerSafeBlobDownload,
   PptxExportMode
 } from '../utils/slideExporter';
@@ -40,7 +38,6 @@ export const ExportModal: React.FC<ExportModalProps> = ({ isOpen, onClose, slide
   const [isGeneratingHtml, setIsGeneratingHtml] = useState<boolean>(false);
   const [isDownloadingFonts, setIsDownloadingFonts] = useState<boolean>(false);
   const [isDownloadingPdf, setIsDownloadingPdf] = useState<boolean>(false);
-  const [isDownloadingSource, setIsDownloadingSource] = useState<boolean>(false);
   const [renderProgress, setRenderProgress] = useState<string>('');
   const [pptxSuccess, setPptxSuccess] = useState<boolean>(false);
   const [pdfSuccess, setPdfSuccess] = useState<boolean>(false);
@@ -48,17 +45,6 @@ export const ExportModal: React.FC<ExportModalProps> = ({ isOpen, onClose, slide
   const [format, setFormat] = useState<'markdown' | 'calculated_fields' | 'csv_dataset'>('markdown');
 
   if (!isOpen) return null;
-
-  const handleDownloadSourceZip = async () => {
-    try {
-      setIsDownloadingSource(true);
-      setRenderProgress('Packaging full source code for GitHub & Vercel...');
-      await downloadGitHubVercelSourceZip();
-    } finally {
-      setIsDownloadingSource(false);
-      setRenderProgress('');
-    }
-  };
 
   const handleDownloadPptx = async (selectedMode: PptxExportMode) => {
     try {
@@ -377,39 +363,6 @@ lambda_param * SUM(POWER(weight_val, 2))
 
         {/* Modal Body */}
         <div className="p-6 flex flex-col gap-4 overflow-y-auto">
-          {/* 1-Click GitHub & Vercel Full Source Code (.zip) Download Bar */}
-          <div className="bg-gradient-to-r from-indigo-950 via-slate-900 to-emerald-950/60 border border-indigo-500/50 rounded-xl p-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-            <div className="flex items-start gap-3">
-              <div className="p-2 rounded-lg bg-indigo-500/20 text-indigo-300 shrink-0 mt-0.5">
-                <FolderGit2 className="w-4 h-4" />
-              </div>
-              <div>
-                <div className="text-xs font-bold text-white flex items-center gap-1.5">
-                  <span>ដោនឡូតកូដទាំងអស់សម្រាប់ផុសចូល GitHub &amp; Vercel (Full Project Source Code)</span>
-                  <span className="px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 text-[10px] font-mono">
-                    READY FOR GITHUB &amp; VERCEL
-                  </span>
-                </div>
-                <p className="text-[11px] text-slate-300 font-khmer mt-1 leading-relaxed">
-                  ចុចប៊ូតុងខាងស្តាំដើម្បីទាញយកកូដ App ទាំងអស់ជាឯកសារ <code className="text-indigo-300">.zip</code> រួចពន្លា (Extract) ហើយអាប់ឡូតចូលទៅក្នុង{' '}
-                  <strong className="text-emerald-300">github.com/new</strong> និងភ្ជាប់ទៅ <strong className="text-sky-300">vercel.com/new</strong> បានភ្លាមៗ!
-                </p>
-              </div>
-            </div>
-            <button
-              onClick={handleDownloadSourceZip}
-              disabled={isDownloadingSource || isGeneratingPptx || isGeneratingHtml}
-              className="px-3.5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center gap-1.5 shrink-0 shadow-lg transition-all disabled:opacity-50"
-            >
-              {isDownloadingSource ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <FolderGit2 className="w-4 h-4" />
-              )}
-              <span className="font-khmer">ដោនឡូតកូដ GitHub (.zip)</span>
-            </button>
-          </div>
-
           {/* Font Installer Bar for Microsoft PowerPoint Desktop */}
           <div className="bg-gradient-to-r from-indigo-950/90 via-slate-900 to-amber-950/60 border border-indigo-500/40 rounded-xl p-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div className="flex items-start gap-3">
